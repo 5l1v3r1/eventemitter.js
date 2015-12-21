@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>eventemitter.js</title>
+    <script src="../eventemitter.js"></script>
+    <script type="text/javascript">
+    function MyFancyClass() {
+      window.EventEmitter.call(this);
+    }
+
+    window.EventEmitter.makeSubclass(MyFancyClass.prototype);
+
+    window.addEventListener('load', function() {
+      var nameField = document.getElementById('name-field');
+      var globalObj = new MyFancyClass();
+
+      globalObj.on('name', function(n) {
+        document.getElementById('name-label').innerText = n;
+      });
+      globalObj.on('name', function(n) {
+        document.title = n;
+      });
+      globalObj.on('name', function(n) {
+        if (nameField.value !== n) {
+          nameField.value = n;
+        }
+      });
+      globalObj.on('reset', function() {
+        globalObj.emit('name', 'eventemitter.js');
+      });
+
+      document.getElementById('reset-button').addEventListener('click', function() {
+        globalObj.emit('reset');
+      });
+
+      nameField.addEventListener('keydown', function() {
+        setTimeout(function() {
+          globalObj.emit('name', document.getElementById('name-field').value);
+        }, 10);
+      });
+
+      globalObj.emit('reset');
+    });
+    </script>
+  </head>
+  <body>
+    <input id="name-field" value="eventemitter.js">
+    <br />
+    Title: <label id="name-label">eventemitter.js</label>
+    <br />
+    <button id="reset-button">Reset</button>
+  </body>
+</html>
